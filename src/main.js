@@ -5,7 +5,7 @@
 const CARROT_SIZE = 80;
 const CARROT_COUNT = 5;
 const BUG_COUNT = 5;
-const GAME_PLAY_TIME = 71;
+const GAME_PLAY_TIME = 5;
 
 // elements in header.game__header
 const field = document.querySelector('.game__field');
@@ -20,6 +20,7 @@ const popUpText = document.querySelector('.pop-up__message');
 
 let timer = undefined;
 let started = false;
+let score = 0;
 
 startBtn.addEventListener('click', () => {
   if (started) {
@@ -33,6 +34,8 @@ popUpRefresh.addEventListener('click', () => {
   startGame();
   hidePopUp();
 });
+
+field.addEventListener('click', onFieldClick);
 
 function startGame() {
   started = true;
@@ -49,9 +52,20 @@ function stopGame() {
   showPopUpWithText('Replay?');
 }
 
+function finishGame(win) {
+  started = false;
+  hideGameBtn();
+  stopGameTimer();
+  showPopUpWithText(win ? '🎊You Won🎊' : 'Game Over💩');
+}
+
 function showTimerAndScore() {
   gameTimer.style.visibility = 'visible';
   gameScore.style.visibility = 'visible';
+}
+
+function updateScoreBoard() {
+  gameScore.innerText = CARROT_COUNT - score;
 }
 
 function startGameTimer() {
@@ -60,6 +74,7 @@ function startGameTimer() {
   timer = setInterval(() => {
     if (remainGameTime <= 0) {
       clearInterval(timer);
+      finishGame(score === CARROT_COUNT);
       return;
     }
     updateTimerText(--remainGameTime);
@@ -102,9 +117,27 @@ function hidePopUp() {
 
 function initGame() {
   field.innerHTML = '';
+  score = 0;
   gameScore.innerText = CARROT_COUNT;
   addItem('carrot', CARROT_COUNT, 'img/carrot.png');
   addItem('bug', BUG_COUNT, 'img/bug.png');
+}
+
+function onFieldClick(event) {
+  if (!started) {
+    return;
+  }
+  const target = event.target;
+  if (target.matches('.carrot')) {
+    target.remove();
+    score++;
+    updateScoreBoard();
+    if (score === CARROT_COUNT) {
+      finishGame(true);
+    }
+  } else if (target.matches('.bug')) {
+    finishGame(false);
+  }
 }
 
 function addItem(className, count, imgPath) {
