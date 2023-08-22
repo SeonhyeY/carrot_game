@@ -1,7 +1,6 @@
 # [Find Carrots](https://seonhyey.github.io/carrot_game/)
 
 A game that users harvest carrots while avoiding bugs. <br>
-logic image
 ![Diagram](readmeImg/logic.png)
 
 ## Functions
